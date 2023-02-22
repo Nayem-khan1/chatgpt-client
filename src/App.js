@@ -11,6 +11,7 @@ function App() {
 
   const [input, setInput] = useState("");
   const [models, setModels] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [currentModel, setCurrentModel] = useState("ada");
   const [chatLog, setChatLog] = useState([
     {
@@ -39,6 +40,7 @@ function App() {
     setInput("");
     setChatLog(chatLogNew);
     const messages = chatLogNew.map((message) => message.message).join("\n");
+    setLoading(true);
     const response = await fetch("http://localhost:5000", {
       method: "POST",
       headers: {
@@ -51,6 +53,7 @@ function App() {
     });
     const data = await response.json();
     setChatLog([...chatLogNew, { user: "gpt", message: `${data.message}` }]);
+    setLoading(false);
   }
   console.log(Array.isArray(chatLog));
   return (
@@ -84,6 +87,7 @@ function App() {
           ))}
         </div>
         <div className="chat-input-holder">
+          {loading && <div>Loading...</div>}
           <form onSubmit={handleSubmit}>
             <input
               type="text"
@@ -103,9 +107,9 @@ function App() {
 const ChatMessage = ({ message }) => {
   return (
     <div>
-      <div className={`chat-message ${message.user === "gpt" && "chatgpt"}`}>
+      <div className={`chat-message ${message.user === "gpt" && "chat-gpt"}`}>
         <div className="chat-message-center">
-          <div className={`avatar ${message.user === "gpt" && "chatgpt"}`}>
+          <div className={`avatar ${message.user === "gpt" && "chat-gpt"}`}>
             {message.user === "gpt" && (
               <svg
                 xmlns="http://www.w3.org/2000/svg"
